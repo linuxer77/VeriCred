@@ -1,3 +1,0 @@
-# Ignore gitignore files in subdirectories
-*/.gitignore
-**/.gitignore
