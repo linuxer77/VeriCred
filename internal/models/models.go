@@ -5,7 +5,7 @@ import (
 )
 
 
-type User struct {
+type Users struct {
 	MetamaskAddress string    `json:"metamask_address"` // Ethereum address from Metamask wallet
 	Email           string    `json:"email"`
 	CreatedAt       time.Time `json:"created_at"`
