@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 contract vericredNFT is ERC721URIStorage {
     address public owner;
-    uint256 private _tokenIds;
+    uint256 public _tokenIds;
     mapping (address => bool) public verifiedOrgs;
     address[] public Orgs;
 
@@ -31,6 +31,11 @@ contract vericredNFT is ERC721URIStorage {
 
     function allOrgs() public view returns (address[] memory) {
         return Orgs;
+    }
+
+    function isVerfiedOrg(address adr) public view returns (bool) {
+        bool status = verifiedOrgs[adr];
+        return status;
     }
 
     function newOrg(address _org) public {

@@ -16,8 +16,9 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+type Contract struct {}
 
-func Contractresp(option string) {
+func (c Contract) Deploy() string{
 
 	privateKeyHex := "e27fc11f6468ca7b5916ebfd853b0e92aca9a5899af26414bae8d22bfd55c5d4"
 	privateKey, err := crypto.HexToECDSA(strings.TrimPrefix(privateKeyHex, "0x"))
@@ -47,7 +48,7 @@ func Contractresp(option string) {
 	auth.GasLimit = uint64(3000000)
 
 
-	address, tx, instance, err := build.DeployBuild(auth, client)
+	address, tx, _, err := build.DeployBuild(auth, client)
 	if err != nil {
 		log.Fatal("Failed to deploy:", err)
 	}
@@ -55,30 +56,97 @@ func Contractresp(option string) {
 	fmt.Println("Contract deployed at: ", address.Hex())
 	fmt.Println("Deployment TX:", tx.Hash().Hex())
 
+	log.Println("Waiting for the for Contract deployment transaction...")
 	_, err = bind.WaitDeployed(context.Background(), client, tx)
 	if err != nil {
 		log.Fatal("Wait failed: ", err)
 	}
-	
+	log.Println("Successfully waited for the deployment.")	
 	// cAddress := common.HexToAddress("0x2a67320e4fc9d8E072021575e5D0450ED5ae316e")
 
 	// instance, err = build.NewBuild(cAddress, client)
 	// if err != nil {
-	// 	log.Fatal("❌ Failed to bind to contract:", err)
+	// 	log.Fatal("❌ Failed to bind to Contract:", err)
 	// }
 	// log.Println("Instance: ", instance)
-	
-	userAddr := common.HexToAddress("0x2a67320e4fc9d8E072021575e5D0450ED5ae316e")
-	_, err = instance.MintDoc(auth, userAddr, "https://chocolate-electoral-parrot-267.mypinata.cloud/ipfs/bafkreifgophqzx5pw2uvukbozh7fxcpo5fdx2rprh73t3l72pgszekeita")
-	if err != nil {
-		log.Fatal("❌ Failed to call AllOrgs:", err)
-	}
+	return address.Hex()
 
-	tokenId, err := instance.CurrentTokenId(nil)
-	if err != nil {
-		log.Fatal("Failed to call currenttokenid: ", err)
-	}
+	// userAddr := common.HexToAddress("0x2a67320e4fc9d8E072021575e5D0450ED5ae316e")
+	// _, err = instance.MintDoc(auth, userAddr, "https://chocolate-electoral-parrot-267.mypinata.cloud/ipfs/bafkreifgophqzx5pw2uvukbozh7fxcpo5fdx2rprh73t3l72pgszekeita")
+	// if err != nil {
+	// 	log.Fatal("❌ Failed to call AllOrgs:", err)
+	// }
 
-	fmt.Println("TokenID:", tokenId)
+	// tokenId, err := instance.CurrentTokenId(nil)
+	// if err != nil {
+	// 	log.Fatal("Failed to call currenttokenid: ", err)
+	// }
+
+	// fmt.Println("TokenID:", tokenId)
 }
 
+func (c Contract) InteractViewFunction(conAddress string, uAddress string) {
+	client, err := ethclient.Dial("https://sepolia.infura.io/v3/2a159ca7304a4df4ade0d0ccf9ce70ef")
+	if err != nil {
+		log.Fatal("❌ Failed to connect to the sepolia network.", err)
+	}
+	log.Println("Connected to the sepolia network.")
+
+	cAddress := common.HexToAddress(conAddress)
+	instance, err := build.NewBuild(cAddress, client)
+	if err != nil {
+		log.Fatal("Some error occurred when calling NewBuild: ", err)
+	}
+
+	userAddress := common.HexToAddress(uAddress)
+	fmt.Println(userAddress)
+
+	check, err := instance.AllOrgs(nil)
+	if err != nil {
+		log.Fatal("Failed to call currentTokenId: ", err)
+	}
+	
+	fmt.Println("token ID: ", check)
+}
+
+func (c Contract) InteractTransactionFunction(conAddress string, uAddress string) {
+
+	privateKeyHex := "e27fc11f6468ca7b5916ebfd853b0e92aca9a5899af26414bae8d22bfd55c5d4"
+
+	privateKey, err := crypto.HexToECDSA(strings.TrimPrefix(privateKeyHex, "0x"))
+	if err != nil {
+		log.Fatal("Invalid private key")
+	}
+	client, err := ethclient.Dial("https://sepolia.infura.io/v3/2a159ca7304a4df4ade0d0ccf9ce70ef")
+	if err != nil {
+		log.Fatal("❌ Failed to connect to the sepolia network.", err)
+	}
+	log.Println("Successfully logged in to sepolia network")
+
+	publicKey := privateKey.Public().(*ecdsa.PublicKey)
+	fromAddress := crypto.PubkeyToAddress(*publicKey)
+	chainID, _ := client.NetworkID(context.Background())
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	auth.From = fromAddress
+	auth.Value = big.NewInt(0)
+	auth.GasLimit = uint64(3000000)
+
+	cAddress := common.HexToAddress(conAddress)
+	instance, err := build.NewBuild(cAddress, client)
+	if err != nil {
+		log.Fatal("Some error occurred when calling NewBuild: ", err)
+	}
+
+	userAddr := common.HexToAddress(uAddress)
+
+	fmt.Println(userAddr)
+	_, err = instance.MintDoc(auth, userAddr, "https://chocolate-electoral-parrot-267.mypinata.cloud/ipfs/bafkreifgophqzx5pw2uvukbozh7fxcpo5fdx2rprh73t3l72pgszekeita")
+	if err != nil {
+		log.Fatal("Failed to call currentTokenId: ", err)
+	}
+	log.Println("New org added successfully.")
+}
