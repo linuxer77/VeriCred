@@ -18,7 +18,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Post("/auth/user/register", handlers.CreateUser)
 	r.Post("/auth/org/register", handlers.CreateOrg)
-
+	r.Post("/login", handlers.LoginHandler)
 	fmt.Println("Port :8080 is active....")
 	http.ListenAndServe(":8080", r)
 }

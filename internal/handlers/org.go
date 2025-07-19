@@ -8,7 +8,6 @@ import (
 	"vericred/internal/models"
 )
 
-
 func CreateOrg(w http.ResponseWriter, r *http.Request) {
 	log.Println("CreateOrg funciton called.")
 
@@ -31,6 +30,4 @@ func CreateOrg(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(org)
-
-
 }
