@@ -20,6 +20,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
+	// fetchUser := 
 	result := db.DB.Create(&user)
 	if result.Error != nil {
 		http.Error(w, "DB error", http.StatusInternalServerError)

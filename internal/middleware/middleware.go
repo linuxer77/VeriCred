@@ -17,13 +17,12 @@ func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	tokenString = tokenString[len("Bearer "):]
 
-  err := pkg.VerifyToken(tokenString)
+    err := pkg.VerifyToken(tokenString)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, "Invalid token")
+		return
+	}
 
-  if err != nil {
-    w.WriteHeader(http.StatusUnauthorized)
-    fmt.Fprint(w, "Invalid token")
-    return
-  }
-
-  fmt.Fprint(w, "welcome fucker.")
+	fmt.Fprint(w, "welcome fucker.")
 }

@@ -24,6 +24,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	    fmt.Fprint(w, tokenString)
 		return
+		
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	    fmt.Fprint(w, "Invalid credentials")

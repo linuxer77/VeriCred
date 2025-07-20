@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// JWT SHITFUCKERY
 var secretkey = []byte("random-bullshit-go")
 
 func CreateToken(username string) (string, error) {
