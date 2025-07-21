@@ -10,7 +10,7 @@ type Accounts struct {
 	MetamaskAddress string    `json:"metamask_address"` // Ethereum address from Metamask wallet
 	AccountType     string    `json:"account_type"`     // "individual" or "organization"
 	CreatedAt       time.Time `json:"created_at"`
-	Password        string    `json:"-"` // Hide from JSON
+	// Password        string    `json:"-"` // we dont this for now, if we're verifying shit by jwt
 	Verified        bool      `default:"false" json:"verified"`
 }
 
