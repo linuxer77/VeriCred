@@ -2,19 +2,38 @@ package pkg
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
-// JWT SHITFUCKERY
-var secretkey = []byte("random-bullshit-go")
+// JWT Secret Key from environment
+var secretkey []byte
 
-func CreateToken(username string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, 
+func init() {
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, using environment variables")
+	}
+
+	// Get JWT secret from environment
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		log.Fatal("JWT_SECRET environment variable is required")
+	}
+
+	secretkey = []byte(secret)
+}
+
+func CreateToken(metamaskAddress string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"username": username,
-			"exp": time.Now().Add(time.Hour * 24).Unix(),
+			"metamask_address": metamaskAddress,
+			"exp":              time.Now().Add(time.Hour * 24).Unix(),
 		})
 
 	tokenString, err := token.SignedString(secretkey)
@@ -25,18 +44,17 @@ func CreateToken(username string) (string, error) {
 }
 
 func VerifyToken(tokenString string) error {
-   token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-      return secretkey, nil
-   })
-  
-   if err != nil {
-      return err
-   }
-  
-   if !token.Valid {
-      return fmt.Errorf("invalid token")
-   }
-  
-   return nil
-}
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return secretkey, nil
+	})
 
+	if err != nil {
+		return err
+	}
+
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+
+	return nil
+}

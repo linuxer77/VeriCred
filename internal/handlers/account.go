@@ -13,39 +13,38 @@ import (
 
 
 func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
-	var acc models.Accounts
-	err := json.NewDecoder(r.Body).Decode(&acc)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Invalid JSON request")
-		return
-	}
-	
-	tempAcc := db.DB.First(&acc, "MetamaskAddress = ?", acc.MetamaskAddress)
-	
-	if (tempAcc.Error == gorm.ErrRecordNotFound) && (tempAcc.RowsAffected == 0) {
-		result := db.DB.Create(&acc)
-		if result.Error != nil {
-			http.Error(w, "DB error", http.StatusInternalServerError)
-			return
-		}
-		tokenStr, err := pkg.CreateToken(acc.MetamaskAddress)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Println("Error when creating token: ", err)
-		}
-		w.WriteHeader(http.StatusOK)
-	    fmt.Fprint(w, tokenStr)
-		return
-	} else if (tempAcc.Error != nil) && (tempAcc.RowsAffected == 1) {
-		tokenStr, err := pkg.CreateToken(acc.MetamaskAddress)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Println("Error when creating token: ", err)
-		}
-		w.WriteHeader(http.StatusOK)
-	    fmt.Fprint(w, tokenStr)
-	}
-	
+    var acc models.Accounts
+    err := json.NewDecoder(r.Body).Decode(&acc)
+    if err != nil {
+        http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+        return
+    }
+    
+    // Check if account exists
+    var existingAcc models.Accounts
+    result := db.DB.First(&existingAcc, "metamask_address = ?", acc.MetamaskAddress)
+    
+    if result.Error == gorm.ErrRecordNotFound {
+        // New user - create account
+        createResult := db.DB.Create(&acc)
+        if createResult.Error != nil {
+            http.Error(w, "Failed to create account", http.StatusInternalServerError)
+            return
+        }
+    } else if result.Error != nil {
+        // Database error
+        http.Error(w, "Database error", http.StatusInternalServerError)
+        return
+    }
+    // If no error, user exists - proceed to create token
+    
+    // Create JWT token
+    tokenStr, err := pkg.CreateToken(acc.MetamaskAddress)
+    if err != nil {
+        http.Error(w, "Failed to create token", http.StatusInternalServerError)
+        return
+    }
+    
+    w.WriteHeader(http.StatusOK)
+    fmt.Fprint(w, tokenStr)
 }
-
