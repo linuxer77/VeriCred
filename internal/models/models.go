@@ -25,5 +25,5 @@ type Organization struct {
 	MetamaskAddress string    `json:"metamask_address"`
 	AcadEmail       string    `gorm:"notNull" json:"acad_email"`
 	OrgName         string    `gorm:"notNull" json:"org_name"`
-	OrgType         string    `gorm:"notNull" json:"org_type"` // "college", "school", "institute", etc.
+	OrgType         string    `gorm:"Null" json:"org_type"` // "college", "school", "institute", etc.
 }

@@ -20,7 +20,8 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Check if account exists
+    db.DB.Create(&acc)
+
     var existingAcc models.Accounts
     result := db.DB.First(&existingAcc, "metamask_address = ?", acc.MetamaskAddress)
     

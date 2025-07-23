@@ -16,9 +16,7 @@ import (
 func main() {
 	db.Init()	
 	r := chi.NewRouter()
-	r.Post("/auth/user/register", handlers.CreateUser)
-	r.Post("/auth/org/register", handlers.CreateOrg)
-	r.Post("/login", handlers.LoginHandler)
+	r.Post("/auth/register", handlers.LoginInMetamask)
 	fmt.Println("Port :8080 is active....")
 	http.ListenAndServe(":8080", r)
 }
