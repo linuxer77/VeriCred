@@ -7,10 +7,6 @@ import (
 	"vericred/internal/router"
 )
 
-// func handleIndex(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("This shit is working now"))
-// }
-
 func main() {
 	db.Init()	
 	r := router.RegisterRouter()

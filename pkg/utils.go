@@ -9,18 +9,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 )
-
-// JWT Secret Key from environment
 var secretkey []byte
 
 func init() {
-	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: .env file not found, using environment variables")
 	}
 
-	// Get JWT secret from environment
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
 		log.Fatal("JWT_SECRET environment variable is required")
@@ -58,3 +54,4 @@ func VerifyToken(tokenString string) error {
 
 	return nil
 }
+
