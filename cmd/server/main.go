@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"vericred/internal/db"
-	"vericred/internal/handlers"
-
-	"github.com/go-chi/chi/v5"
+	"vericred/internal/router"
 )
 
 // func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -15,8 +13,7 @@ import (
 
 func main() {
 	db.Init()	
-	r := chi.NewRouter()
-	r.Post("/auth/register", handlers.LoginInMetamask)
+	r := router.RegisterRouter()
 	fmt.Println("Port :8080 is active....")
 	http.ListenAndServe(":8080", r)
 }
