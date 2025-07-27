@@ -1,11 +1,15 @@
 package pkg
 
 import (
+	"encoding/hex"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 )
@@ -55,3 +59,33 @@ func VerifyToken(tokenString string) error {
 	return nil
 }
 
+func GenerateNonce() string {
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+	randomNum := rng.Intn(899999) + 100000
+	return fmt.Sprintf("login request #%d", randomNum)
+}
+
+func VerifySignature(address, message, sigHex string) (bool, error) {
+	data := []byte("\x19Ethereum Signed Message:\n" + string(len(message)) + message)
+    hash :=  crypto.Keccak256(data)
+
+	sig := hexToBytes(sigHex)
+	if sig[64] != 27 && sig[64] != 28 {
+		return false, nil
+	}
+	sig[64] -= 27
+
+	pubKey, err := crypto.SigToPub(hash, sig)
+	if err != nil {
+		return false, err
+	}
+
+	recoveredAddr := crypto.PubkeyToAddress(*pubKey).Hex()
+	return strings.EqualFold(recoveredAddr, address), nil
+}
+
+func hexToBytes(hexStr string) []byte {
+	b, _ := hex.DecodeString(strings.TrimPrefix(hexStr, "0x"))
+	return b
+}

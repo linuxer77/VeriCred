@@ -12,5 +12,6 @@ func RegisterRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/auth/register", handlers.LoginInMetamask)
+	r.Get("/getnonce", handlers.GetNonce)
 	return r
 }

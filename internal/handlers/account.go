@@ -13,15 +13,34 @@ import (
 
 
 func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
+    var body struct {
+        MetamaskAddress string `json:"metamask_addresse"`
+        Signature       string `json:"signature"`
+    }
+    
+    json.NewDecoder(r.Body).Decode(&body)
+
+    nonce := nonceMap[body.MetamaskAddress]
+    if nonce == "" {
+        http.Error(w, "nonce missing", http.StatusUnauthorized)
+        return
+    }
+
+    verified, err := pkg.VerifySignature(body.MetamaskAddress, nonce, body.Signature)
+
+    if err != nil || !verified {
+        http.Error(w, "Invalid signature", http.StatusUnauthorized)
+        return
+    }
+    
+    
     var acc models.Accounts
-    err := json.NewDecoder(r.Body).Decode(&acc)
+    err = json.NewDecoder(r.Body).Decode(&acc)
     if err != nil {
         http.Error(w, "Invalid JSON request", http.StatusBadRequest)
         return
     }
     
-    db.DB.Create(&acc)
-
     var existingAcc models.Accounts
     result := db.DB.First(&existingAcc, "metamask_address = ?", acc.MetamaskAddress)
       
