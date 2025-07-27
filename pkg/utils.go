@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -67,7 +68,7 @@ func GenerateNonce() string {
 }
 
 func VerifySignature(address, message, sigHex string) (bool, error) {
-	data := []byte("\x19Ethereum Signed Message:\n" + string(len(message)) + message)
+	data := []byte("\x19Ethereum Signed Message:\n" + strconv.Itoa(len(message)) + message)
     hash :=  crypto.Keccak256(data)
 
 	sig := hexToBytes(sigHex)
