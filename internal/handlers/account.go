@@ -24,8 +24,7 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
 
     var existingAcc models.Accounts
     result := db.DB.First(&existingAcc, "metamask_address = ?", acc.MetamaskAddress)
-    
-    //  
+      
     if result.Error == gorm.ErrRecordNotFound {
         createResult := db.DB.Create(&acc)
         if createResult.Error != nil {
