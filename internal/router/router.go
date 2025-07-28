@@ -13,5 +13,6 @@ func RegisterRouter() http.Handler {
 
 	r.Get("/auth/register", handlers.LoginInMetamask)
 	r.Get("/getnonce", handlers.GetNonce)
+	r.Post("/auth/metamasklogin", handlers.LoginInMetamask)
 	return r
 }
