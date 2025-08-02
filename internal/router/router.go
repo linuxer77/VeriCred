@@ -12,7 +12,7 @@ func RegisterRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/auth/register", handlers.LoginInMetamask)
-	r.Get("/getnonce", handlers.GetNonce)
+	r.Post("/getnonce", handlers.GetNonce)
 	r.Post("/auth/metamasklogin", handlers.LoginInMetamask)
 	return r
 }

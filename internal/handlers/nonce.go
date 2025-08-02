@@ -2,25 +2,28 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"vericred/pkg"
 	"vericred/redisdb"
 )
 
-var nonceMap = map[string]string{}
-
 func GetNonce(w http.ResponseWriter, r *http.Request) {
 	var body struct {
 		MetamaskAddress string 	`json:"metamask_address"`
 	}
-
-	fmt.Println("GetNonce function gets called.")
-	json.NewDecoder(r.Body).Decode(&body)
+	
+	// bodyBytes, _ := io.ReadAll(r.Body)
+	// fmt.Println("Raw JSON body:", string(bodyBytes))
+	
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		log.Println("Some error occurred when decoding: ", err)
+	}
 	nonce := pkg.GenerateNonce()
 
-	var c redisdb.Redis
-	c.RedisSetNonce(body.MetamaskAddress, nonce)
+	rdb := redisdb.GetRedisInstance()
+	rdb.RedisSetNonce(body.MetamaskAddress, nonce)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
