@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+	"gorm.io/datatypes"
 )
 
 type Accounts struct {
@@ -34,6 +35,33 @@ type Organization struct {
 	OrgDesc         *string        `json:"org_desc"`
 }
 
+type Credential struct {
+    ID              string         `gorm:"primaryKey;size:255" json:"id"`
+    StudentID       string         `gorm:"not null;size:100;index" json:"student_id"`
+    StudentWallet   string         `gorm:"not null;size:42" json:"student_wallet"`
+    UniversityID    string         `gorm:"not null;size:100;index" json:"university_id"`
+    DegreeName      string         `gorm:"not null;size:255" json:"degree_name"`
+    Major           string         `gorm:"size:255" json:"major"`
+    GPA             string         `gorm:"size:10" json:"gpa"`
+    GraduationDate  string         `gorm:"size:50" json:"graduation_date"`
+    IPFSHash        string         `gorm:"unique;not null;size:100;index" json:"ipfs_hash"`
+    TokenID         string         `gorm:"unique;size:100;index" json:"token_id"`
+    ContractAddress string         `gorm:"size:42" json:"contract_address"`
+    Status          string         `gorm:"default:Active;size:50;index" json:"status"`
+    CreatedAt       time.Time      `gorm:"autoCreateTime" json:"created_at"`
+    UpdatedAt       time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
+    Metadata        datatypes.JSON `gorm:"type:jsonb" json:"metadata"`
+}
+
+type University struct {
+    ID            string    `gorm:"primaryKey;size:100" json:"id"`
+    Name          string    `gorm:"not null;size:255" json:"name"`
+    WalletAddress string    `gorm:"not null;size:42" json:"wallet_address"`
+    LogoIPFSHash  string    `gorm:"size:100" json:"logo_ipfs_hash"`
+    IsVerified    bool      `gorm:"default:false" json:"is_verified"`
+    CreatedAt     time.Time `gorm:"autoCreateTime" json:"created_at"`
+    UpdatedAt     time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+}
 // type Credential struct {
 // 	ID             uint         `gorm:"primaryKey"`
 // 	Name           string       `json:"name"`
