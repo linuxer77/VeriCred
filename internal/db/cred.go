@@ -28,8 +28,8 @@ func GetCredential(credentialID string) (*models.Credential, error) {
 }
 
 // GetUniversity retrieves university information
-func GetUniversity(universityID string) (*models.University, error) {
-    var university models.University
+func GetUniversity(universityID string) (*models.Organization, error) {
+    var university models.Organization
     result := DB.Where("id = ?", universityID).First(&university)
     if result.Error != nil {
         if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -73,7 +73,7 @@ func UpdateCredentialStatus(credentialID string, status string) error {
 }
 
 // StoreUniversity saves university information
-func StoreUniversity(univ models.University) error {
+func StoreUniversity(univ models.Organization) error {
     result := DB.Create(&univ)
     if result.Error != nil {
         return result.Error

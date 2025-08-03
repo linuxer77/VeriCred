@@ -28,9 +28,8 @@ func Init() {
 	}
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	fmt.Println("(SUCCESS): connected to database successfully ")
-	err = DB.AutoMigrate(&models.Users{}, &models.Organization{}, &models.Credential{}, &models.University{})
+	err = DB.AutoMigrate(&models.Users{}, &models.Organization{}, &models.Credential{}, &models.Organization{})
 	if err != nil {
 		log.Fatal("AutoMigration failed: ", err)
 	}
 }
-
