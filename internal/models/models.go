@@ -9,7 +9,6 @@ import (
 
 var DB *gorm.DB
 
-// InitDB initializes the database connection
 func InitDB(db *gorm.DB) {
 	DB = db
 }
@@ -17,36 +16,35 @@ func InitDB(db *gorm.DB) {
 type Accounts struct {
 	ID              uint       `gorm:"primaryKey" json:"id"`
 	MetamaskAddress string     `gorm:"unique;not null;size:42" json:"metamask_address"`
-	AccountType     string     `gorm:"not null" json:"account_type"` // "user", "organization", "employer", "admin"
+	AccountType     string     `gorm:"not null" json:"account_type"`
 	Verified        bool       `gorm:"default:false" json:"verified"`
-	Credentials     int        `gorm:"default:0" json:"credentials"` // Fixed typo
-	LastLoginAt     *time.Time `json:"last_login_at"`                // Track login activity
+	Credentials     int        `gorm:"default:0" json:"credentials"`
+	LastLoginAt     *time.Time `json:"last_login_at"`
 	IsActive        bool       `gorm:"default:true" json:"is_active"`
 	CreatedAt       time.Time  `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt       time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
 type Users struct {
-	MetamaskAddress     string `gorm:"primaryKey;size:42" json:"metamask_address"` // Same as Accounts
-	Email               string `gorm:"not null;unique" json:"email"`               // Fixed GORM tag
-	FirstName           string `gorm:"not null" json:"first_name"`                 // Fixed GORM tag
-	LastName            string `gorm:"not null" json:"last_name"`                  // Fixed GORM tag
-	Password            string `gorm:"not null" json:"-"`                          // Hidden from JSON
-	StudentID           string `gorm:"size:100" json:"student_id"`                 // University student ID
-	CurrentUniversityID string `gorm:"size:100" json:"current_university_id"`      // If currently enrolled
-	ProfilePicture      string `gorm:"size:255" json:"profile_picture"`            // Added profile picture field
+	MetamaskAddress     string `gorm:"primaryKey;size:42" json:"metamask_address"`
+	Email               string `gorm:"not null;unique" json:"email"`
+	FirstName           string `gorm:"not null" json:"first_name"`
+	LastName            string `gorm:"not null" json:"last_name"`
+	Password            string `gorm:"not null" json:"-"`
+	StudentID           string `gorm:"size:100" json:"student_id"`
+	CurrentUniversityID string `gorm:"size:100" json:"current_university_id"`
+	ProfilePicture      string `gorm:"size:255" json:"profile_picture"`
 
-	// Relationship
 	Account Accounts `gorm:"foreignKey:MetamaskAddress;references:MetamaskAddress"`
 }
 
 type Organization struct {
-	MetamaskAddress string `gorm:"primaryKey;size:42" json:"metamask_address"` // Same as Accounts
+	MetamaskAddress string `gorm:"primaryKey;size:42" json:"metamask_address"`
 	AcadEmail       string `gorm:"not null;unique" json:"acad_email"`
 	OrgName         string `gorm:"not null" json:"org_name"`
-	OrgType         string `gorm:"size:100" json:"org_type"` // "university", "college"
+	OrgType         string `gorm:"size:100" json:"org_type"`
 	OrgUrl          string `gorm:"size:255" json:"org_url"`
-	LogoIPFSHash    string `gorm:"size:100" json:"logo_ipfs_hash"` // IPFS instead of bytes
+	LogoIPFSHash    string `gorm:"size:100" json:"logo_ipfs_hash"`
 	OrgDesc         string `gorm:"type:text" json:"org_desc"`
 	Country         string `gorm:"size:100" json:"country"`
 	State           string `gorm:"size:100" json:"state"`
@@ -58,14 +56,13 @@ type Organization struct {
 	Accreditation   string `gorm:"size:255" json:"accreditation"`
 	IsVerified      bool   `gorm:"default:false" json:"is_verified"`
 
-	// Statistics for dashboard
 	TotalCredentials  int `gorm:"default:0" json:"total_credentials"`
 	ActiveCredentials int `gorm:"default:0" json:"active_credentials"`
 	TotalStudents     int `gorm:"default:0" json:"total_students"`
 
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	// Relationships
+
 	Account Accounts `gorm:"foreignKey:MetamaskAddress;references:MetamaskAddress"`
 }
 
@@ -73,22 +70,20 @@ type CredentialTemplate struct {
 	ID               uint   `gorm:"primaryKey" json:"id"`
 	UniversityWallet string `gorm:"not null;size:42;index" json:"university_wallet"`
 	TemplateName     string `gorm:"not null" json:"template_name"`
-	DegreeType       string `gorm:"not null" json:"degree_type"` // "Bachelor", "Master", "PhD", "Certificate"
+	DegreeType       string `gorm:"not null" json:"degree_type"`
 	Major            string `gorm:"not null" json:"major"`
 	Department       string `gorm:"size:255" json:"department"`
-	CourseDuration   string `gorm:"size:50" json:"course_duration"` // "4 years", "2 years"
+	CourseDuration   string `gorm:"size:50" json:"course_duration"`
 	MinGPA           string `gorm:"size:10" json:"min_gpa"`
 	IsActive         bool   `gorm:"default:true" json:"is_active"`
-	TemplateIPFS     string `gorm:"size:100" json:"template_ipfs"` // IPFS hash for template design
+	TemplateIPFS     string `gorm:"size:100" json:"template_ipfs"`
 
-	// Metadata for template
 	RequiredFields datatypes.JSON `gorm:"type:jsonb" json:"required_fields"`
 	TemplateConfig datatypes.JSON `gorm:"type:jsonb" json:"template_config"`
 
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
-	// Relationship
 	University Organization `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
 }
 
@@ -106,8 +101,8 @@ type Credential struct {
 	ContractAddress string `gorm:"size:42" json:"contract_address"`
 	Status          string `gorm:"default:Active;size:50;index" json:"status"`
 
-	CertificateIPFS string `gorm:"size:100" json:"certificate_ipfs"` // Actual certificate document
-	TranscriptIPFS  string `gorm:"size:100" json:"transcript_ipfs"`  // Academic transcript
+	CertificateIPFS string `gorm:"size:100" json:"certificate_ipfs"`
+	TranscriptIPFS  string `gorm:"size:100" json:"transcript_ipfs"`
 
 	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
@@ -119,27 +114,23 @@ type Credential struct {
 }
 
 type StudentAcademicInfo struct {
-	// From Users table
 	MetamaskAddress string `json:"metamask_address"`
 	FirstName       string `json:"first_name"`
 	LastName        string `json:"last_name"`
 	Email           string `json:"email"`
 	StudentID       string `json:"student_id"`
 
-	// From Credential table
 	Major          string `json:"major"`
 	GPA            string `json:"gpa"`
 	GraduationDate string `json:"graduation_date"`
 	Status         string `json:"status"`
 
-	// From CredentialTemplate table
 	DegreeType     string `json:"degree_type"`
-	Department     string `json:"department"`
+	DegreeTitle    string `json:"degree_title"`
 	CourseDuration string `json:"course_duration"`
 
-	// Derived fields
 	TotalCredentials int    `json:"total_credentials"`
-	EnrollmentStatus string `json:"enrollment_status"` // "graduated", "enrolled"
+	EnrollmentStatus string `json:"enrollment_status"`
 }
 
 func GetUniversityStudents(universityWallet string) ([]Users, error) {
@@ -193,14 +184,13 @@ type VerificationRequest struct {
 	StudentWallet  string     `gorm:"not null;size:42" json:"student_wallet"`
 	CredentialID   string     `gorm:"not null" json:"credential_id"`
 	RequestMessage string     `gorm:"type:text" json:"request_message"`
-	Status         string     `gorm:"default:pending" json:"status"` // "pending", "approved", "denied"
+	Status         string     `gorm:"default:pending" json:"status"`
 	RequestedAt    time.Time  `gorm:"autoCreateTime" json:"requested_at"`
 	RespondedAt    *time.Time `json:"responded_at"`
 
 	Student    Users      `gorm:"foreignKey:StudentWallet;references:MetamaskAddress"`
 	Credential Credential `gorm:"foreignKey:CredentialID;references:ID"`
 }
-
 
 type UniversityDashboardStats struct {
 	TotalStudents      int64 `json:"total_students"`
@@ -209,10 +199,8 @@ type UniversityDashboardStats struct {
 	GraduatedStudents  int64 `json:"graduated_students"`
 	PendingCredentials int64 `json:"pending_credentials"`
 
-	// By Department
 	DepartmentStats []DepartmentStat `json:"department_stats"`
 
-	// By Degree Type
 	DegreeTypeStats []DegreeTypeStat `json:"degree_type_stats"`
 }
 
@@ -230,29 +218,24 @@ type DegreeTypeStat struct {
 func GetUniversityDashboardStats(universityWallet string) (*UniversityDashboardStats, error) {
 	stats := &UniversityDashboardStats{}
 
-	// Total students
 	DB.Table("credentials").
 		Where("university_wallet = ?", universityWallet).
 		Distinct("student_wallet").
 		Count(&stats.TotalStudents)
 
-	// Active credentials
 	DB.Table("credentials").
 		Where("university_wallet = ? AND status = ?", universityWallet, "Active").
 		Count(&stats.ActiveCredentials)
 
-	// Total credentials
 	DB.Table("credentials").
 		Where("university_wallet = ?", universityWallet).
 		Count(&stats.TotalCredentials)
 
-	// Graduated students (have graduation date in past)
 	DB.Table("credentials").
 		Where("university_wallet = ? AND graduation_date <= NOW() AND status = ?", universityWallet, "Active").
 		Distinct("student_wallet").
 		Count(&stats.GraduatedStudents)
 
-	// Department stats
 	DB.Table("credentials c").
 		Select("ct.department, COUNT(DISTINCT c.student_wallet) as student_count, COUNT(c.id) as credential_count").
 		Joins("JOIN credential_templates ct ON c.template_id = ct.id").
@@ -260,7 +243,6 @@ func GetUniversityDashboardStats(universityWallet string) (*UniversityDashboardS
 		Group("ct.department").
 		Find(&stats.DepartmentStats)
 
-	// Degree type stats
 	DB.Table("credentials c").
 		Select("ct.degree_type, COUNT(DISTINCT c.student_wallet) as student_count").
 		Joins("JOIN credential_templates ct ON c.template_id = ct.id").
@@ -272,7 +254,6 @@ func GetUniversityDashboardStats(universityWallet string) (*UniversityDashboardS
 }
 
 type UserDashboardProfile struct {
-	// From Users
 	MetamaskAddress string `json:"metamask_address"`
 	Email           string `json:"email"`
 	FirstName       string `json:"first_name"`
@@ -282,13 +263,11 @@ type UserDashboardProfile struct {
 	Bio             string `json:"bio"`
 	PhoneNumber     string `json:"phone_number"`
 
-	// From Accounts
 	AccountType      string     `json:"account_type"`
 	Verified         bool       `json:"verified"`
 	TotalCredentials int        `json:"total_credentials"`
 	LastLoginAt      *time.Time `json:"last_login_at"`
 
-	// Derived from Credentials
 	UniversitiesAttended []string `json:"universities_attended"`
 	LatestDegree         string   `json:"latest_degree"`
 	LatestGPA            string   `json:"latest_gpa"`
@@ -298,17 +277,14 @@ type UserDashboardProfile struct {
 func GetUserDashboardProfile(userWallet string) (*UserDashboardProfile, error) {
 	profile := &UserDashboardProfile{}
 
-	// Get user basic info
 	var user Users
 	if err := DB.Where("metamask_address = ?", userWallet).First(&user).Error; err != nil {
 		return nil, err
 	}
 
-	// Get account info
 	var account Accounts
 	DB.Where("metamask_address = ?", userWallet).First(&account)
 
-	// Map data
 	profile.MetamaskAddress = user.MetamaskAddress
 	profile.Email = user.Email
 	profile.FirstName = user.FirstName
@@ -321,13 +297,11 @@ func GetUserDashboardProfile(userWallet string) (*UserDashboardProfile, error) {
 	profile.TotalCredentials = account.Credentials
 	profile.LastLoginAt = account.LastLoginAt
 
-	// Get credential-derived data
 	var credentials []Credential
 	DB.Where("student_wallet = ?", userWallet).Find(&credentials)
 
 	profile.CredentialCount = int64(len(credentials))
 
-	// Get universities attended
 	universities := make(map[string]bool)
 	for _, cred := range credentials {
 		var org Organization
@@ -340,9 +314,8 @@ func GetUserDashboardProfile(userWallet string) (*UserDashboardProfile, error) {
 		profile.UniversitiesAttended = append(profile.UniversitiesAttended, uni)
 	}
 
-	// Get latest degree info
 	if len(credentials) > 0 {
-		latest := credentials[len(credentials)-1] // Most recent
+		latest := credentials[len(credentials)-1]
 		profile.LatestDegree = latest.DegreeName
 		profile.LatestGPA = latest.GPA
 	}
