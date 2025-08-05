@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -66,51 +65,36 @@ type Organization struct {
 	Account Accounts `gorm:"foreignKey:MetamaskAddress;references:MetamaskAddress"`
 }
 
-type CredentialTemplate struct {
-	ID               uint   `gorm:"primaryKey" json:"id"`
-	UniversityWallet string `gorm:"not null;size:42;index" json:"university_wallet"`
-	TemplateName     string `gorm:"not null" json:"template_name"`
-	DegreeType       string `gorm:"not null" json:"degree_type"`
-	Major            string `gorm:"not null" json:"major"`
-	Department       string `gorm:"size:255" json:"department"`
-	CourseDuration   string `gorm:"size:50" json:"course_duration"`
-	MinGPA           string `gorm:"size:10" json:"min_gpa"`
-	IsActive         bool   `gorm:"default:true" json:"is_active"`
-	TemplateIPFS     string `gorm:"size:100" json:"template_ipfs"`
-
-	RequiredFields datatypes.JSON `gorm:"type:jsonb" json:"required_fields"`
-	TemplateConfig datatypes.JSON `gorm:"type:jsonb" json:"template_config"`
-
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-
-	University Organization `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
+type Degree struct {
+    ID          uint   `gorm:"primaryKey" json:"id"`
+    DegreeName  string `gorm:"not null;size:255" json:"degree_name"`
+    DegreeType  string `gorm:"not null;size:100" json:"degree_type"` // Bachelor's, Master's, PhD, etc.
+    Description string `gorm:"type:text" json:"description"`
+    
+    // University relationship
+    UniversityWallet string       `gorm:"not null;size:42" json:"university_wallet"`
+    University       Organization `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
+    
 }
 
 type Credential struct {
-	ID              string `gorm:"primaryKey;size:255" json:"id"`
-	StudentID       string `gorm:"not null;size:100;index" json:"student_id"`
-	StudentWallet   string `gorm:"not null;size:42" json:"student_wallet"`
-	UniversityID    string `gorm:"not null;size:100;index" json:"university_id"`
-	DegreeName      string `gorm:"not null;size:255" json:"degree_name"`
-	Major           string `gorm:"size:255" json:"major"`
-	GPA             string `gorm:"size:10" json:"gpa"`
-	GraduationDate  string `gorm:"size:50" json:"graduation_date"`
-	IPFSHash        string `gorm:"unique;not null;size:100;index" json:"ipfs_hash"`
-	TokenID         string `gorm:"unique;size:100;index" json:"token_id"`
-	ContractAddress string `gorm:"size:42" json:"contract_address"`
-	Status          string `gorm:"default:Active;size:50;index" json:"status"`
-
-	CertificateIPFS string `gorm:"size:100" json:"certificate_ipfs"`
-	TranscriptIPFS  string `gorm:"size:100" json:"transcript_ipfs"`
-
-	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
-	Metadata  datatypes.JSON `gorm:"type:jsonb" json:"metadata"`
-
+	ID              string    `gorm:"primaryKey;size:100" json:"id"`
+	DegreeID         uint      `gorm:"not null" json:"degree_id"`
+    StudentWallet    string    `gorm:"not null;size:42" json:"student_wallet"`
+    UniversityWallet string    `gorm:"not null;size:42" json:"university_wallet"`
+    DegreeName      string    `gorm:"not null;size:255" json:"degree_name"`
+	Description     string    `gorm:"type:text" json:"description"`
+	Type            string    `gorm:"not null;size:100" json:"type"`
+	Major           string    `gorm:"size:255" json:"major"`
+	IssuedDate      time.Time `gorm:"not null" json:"issued_date"`
+	GraduationDate  string    `gorm:"size:50" json:"graduation_date"`
+	Status          string    `gorm:"default:Active;size:50;index" json:"status"`
+	CreatedAt       time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt       time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	
 	Student    Users              `gorm:"foreignKey:StudentWallet;references:MetamaskAddress"`
 	University Organization       `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
-	Template   CredentialTemplate `gorm:"foreignKey:TemplateID;references:ID"`
+	Degree     Degree       `gorm:"foreignKey:DegreeID;references:ID"`
 }
 
 type StudentAcademicInfo struct {
@@ -274,7 +258,7 @@ type UserDashboardProfile struct {
 	CredentialCount      int64    `json:"credential_count"`
 }
 
-func GetUserDashboardProfile(userWallet string) (*UserDashboardProfile, error) {
+/*func GetUserDashboardProfile(userWallet string) (*UserDashboardProfile, error) {
 	profile := &UserDashboardProfile{}
 
 	var user Users
@@ -322,3 +306,4 @@ func GetUserDashboardProfile(userWallet string) (*UserDashboardProfile, error) {
 
 	return profile, nil
 }
+*/
