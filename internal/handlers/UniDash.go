@@ -67,7 +67,6 @@ func GetMintRequests(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(requests)
 }
 
-// ...existing code...
 
 func SearchStudents(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
@@ -84,7 +83,6 @@ func SearchStudents(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Get limit parameter (default to 20)
     limitStr := r.URL.Query().Get("limit")
     limit := 20
     if limitStr != "" {
