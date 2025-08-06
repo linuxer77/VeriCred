@@ -199,43 +199,6 @@ type DegreeTypeStat struct {
 	StudentCount int    `json:"student_count"`
 }
 
-func GetUniversityDashboardStats(universityWallet string) (*UniversityDashboardStats, error) {
-	stats := &UniversityDashboardStats{}
-
-	DB.Table("credentials").
-		Where("university_wallet = ?", universityWallet).
-		Distinct("student_wallet").
-		Count(&stats.TotalStudents)
-
-	DB.Table("credentials").
-		Where("university_wallet = ? AND status = ?", universityWallet, "Active").
-		Count(&stats.ActiveCredentials)
-
-	DB.Table("credentials").
-		Where("university_wallet = ?", universityWallet).
-		Count(&stats.TotalCredentials)
-
-	DB.Table("credentials").
-		Where("university_wallet = ? AND graduation_date <= NOW() AND status = ?", universityWallet, "Active").
-		Distinct("student_wallet").
-		Count(&stats.GraduatedStudents)
-
-	DB.Table("credentials c").
-		Select("ct.department, COUNT(DISTINCT c.student_wallet) as student_count, COUNT(c.id) as credential_count").
-		Joins("JOIN credential_templates ct ON c.template_id = ct.id").
-		Where("c.university_wallet = ?", universityWallet).
-		Group("ct.department").
-		Find(&stats.DepartmentStats)
-
-	DB.Table("credentials c").
-		Select("ct.degree_type, COUNT(DISTINCT c.student_wallet) as student_count").
-		Joins("JOIN credential_templates ct ON c.template_id = ct.id").
-		Where("c.university_wallet = ?", universityWallet).
-		Group("ct.degree_type").
-		Find(&stats.DegreeTypeStats)
-
-	return stats, nil
-}
 
 type UserDashboardProfile struct {
 	MetamaskAddress string `json:"metamask_address"`
