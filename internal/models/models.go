@@ -34,7 +34,7 @@ type Users struct {
 	CurrentUniversityID string `gorm:"size:100" json:"current_university_id"`
 	ProfilePicture      string `gorm:"size:255" json:"profile_picture"`
 
-	Account Accounts `gorm:"foreignKey:MetamaskAddress;references:MetamaskAddress"`
+	// Remove the direct foreign key relationship - use joins instead when needed
 }
 
 type Organization struct {
@@ -62,7 +62,7 @@ type Organization struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
-	Account Accounts `gorm:"foreignKey:MetamaskAddress;references:MetamaskAddress"`
+	// Remove the direct foreign key relationship - use joins instead when needed
 }
 
 type Degree struct {
@@ -70,11 +70,23 @@ type Degree struct {
     DegreeName  string `gorm:"not null;size:255" json:"degree_name"`
     DegreeType  string `gorm:"not null;size:100" json:"degree_type"` // Bachelor's, Master's, PhD, etc.
     Description string `gorm:"type:text" json:"description"`
-    
-    // University relationship
-    UniversityWallet string       `gorm:"not null;size:42" json:"university_wallet"`
-    University       Organization `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
-    
+    UniversityWallet string `gorm:"not null;size:42;index" json:"university_wallet"`
+    // Temporarily remove foreign key constraint to fix migration
+    // University Organization `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
+}
+
+type CredentialTemplate struct {
+	ID             uint   `gorm:"primaryKey" json:"id"`
+	DegreeType     string `gorm:"not null;size:100" json:"degree_type"`
+	Department     string `gorm:"size:255" json:"department"`
+	CourseDuration string `gorm:"size:100" json:"course_duration"`
+	Description    string `gorm:"type:text" json:"description"`
+	UniversityWallet string `gorm:"not null;size:42;index" json:"university_wallet"`
+	CreatedAt      time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt      time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	
+	// Temporarily remove foreign key constraint to fix migration
+	// University Organization `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
 }
 
 type Credential struct {
@@ -91,10 +103,14 @@ type Credential struct {
 	Status          string    `gorm:"default:Active;size:50;index" json:"status"`
 	CreatedAt       time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt       time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+    GPA        string `gorm:"size:10" json:"gpa"`
+    TemplateID uint   `gorm:"index" json:"template_id"`
+
 	
-	Student    Users              `gorm:"foreignKey:StudentWallet;references:MetamaskAddress"`
-	University Organization       `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
-	Degree     Degree       `gorm:"foreignKey:DegreeID;references:ID"`
+	// Temporarily remove foreign key constraints to fix migration
+	// Student    Users              `gorm:"foreignKey:StudentWallet;references:MetamaskAddress"`
+	// University Organization       `gorm:"foreignKey:UniversityWallet;references:MetamaskAddress"`
+	// Degree     Degree       	  `gorm:"foreignKey:DegreeID;references:ID"`
 }
 
 type StudentAcademicInfo struct {
@@ -172,8 +188,9 @@ type VerificationRequest struct {
 	RequestedAt    time.Time  `gorm:"autoCreateTime" json:"requested_at"`
 	RespondedAt    *time.Time `json:"responded_at"`
 
-	Student    Users      `gorm:"foreignKey:StudentWallet;references:MetamaskAddress"`
-	Credential Credential `gorm:"foreignKey:CredentialID;references:ID"`
+	// Temporarily remove foreign key constraints to fix migration
+	// Student    Users      `gorm:"foreignKey:StudentWallet;references:MetamaskAddress"`
+	// Credential Credential `gorm:"foreignKey:CredentialID;references:ID"`
 }
 
 type UniversityDashboardStats struct {
