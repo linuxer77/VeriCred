@@ -12,7 +12,7 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	var body struct {
 		MetamaskAddress string 	`json:"metamask_address"`
 	}
-	
+   
 	// bodyBytes, _ := io.ReadAll(r.Body)
 	// fmt.Println("Raw JSON body:", string(bodyBytes))
 	

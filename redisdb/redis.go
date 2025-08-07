@@ -30,34 +30,52 @@ func GetRedisInstance() *Redis {
 			}),
 		}
 	})
+
+	ctx := context.Background()
+	_, err := instance.Client.Ping(ctx).Result()
+	if err != nil {
+		log.Printf("Redis connection failed: %v", err)
+	} else {
+		log.Println("Redis connected successfully")
+	}
 	return instance
 }
 
-func (r *Redis) RedisSetNonce(key, value string) {
+func (r *Redis) RedisSetNonce(key, value string) error {
 	ctx := context.Background()
 	fmt.Println("Key: ", key)
 	fmt.Println("Value: ", value)
 	
 	err := r.Client.Set(ctx, key, value, time.Minute*5).Err()
 	if err != nil {
-		panic(err)
+        log.Printf("Failed to set Redis key %s: %v", key, err)
+        return fmt.Errorf("failed to set redis key: %w", err)
 	}
 
-	log.Println("Successfully set the key value pair in redis.")
-	val, err := r.Client.Get(ctx, key).Result()
+    log.Printf("Successfully set Redis key: %s", key)
+	return nil
+	// val, err := r.Client.Get(ctx, key).Result()
 	
-	if err != nil {
-		log.Println("Error: ", err)
-	}
-	log.Println("Val: ", val)
+	// if err != nil {
+	// 	log.Println("Error: ", err)
+	// }
+	// log.Println("Val: ", val)
 }
 
-func (r *Redis) RedisGetNonce(key string) string {
+func (r *Redis) RedisGetNonce(key string) (string, error) {
 	ctx := context.Background()
+    log.Printf("Getting Redis key: %s", key)
 	val, err := r.Client.Get(ctx, key).Result()
-	if err != nil {
-		log.Println("Error: ", err)
-	}
-	
-	return val
+	fmt.Println("Not being able to find the key.")
+    if err != nil {
+        if err == redis.Nil {
+            log.Printf("Redis key not found: %s", key)
+            return "", fmt.Errorf("key not found: %s", key)
+        }
+        log.Printf("Failed to get Redis key %s: %v", key, err)
+        return "", fmt.Errorf("failed to get redis key: %w", err)
+    }
+    
+    log.Printf("Successfully retrieved Redis key: %s = %s", key, val)
+    return val, nil
 }
