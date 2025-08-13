@@ -15,9 +15,6 @@ import (
 
 
 func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("--------------------LogInMetamask function------------------------")
-
-
     var body map[string]interface{}
 
     json.NewDecoder(r.Body).Decode(&body)
@@ -49,8 +46,6 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "nonce missing", http.StatusUnauthorized)
         return
     }
-    
-    log.Println("Nonce: ", nonce)
 
     verified, err := pkg.VerifySignature(metamaskAddress, nonce, signature)
     
@@ -61,7 +56,6 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
     }
 
     acc := models.Accounts{
-        ID: 1,
         MetamaskAddress: metamaskAddress,
         AccountType:     "user",
     }
@@ -69,13 +63,9 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
     log.Println("Account model created successfully.")    
 
     var existingAcc models.Accounts
-    result := db.DB.First(&existingAcc, "metamask_address = ?", metamaskAddress)
+    result := db.DB.First(&existingAcc, "metamask_address = ?", metamaskAddress)    
     
-    log.Println("metamask address scan completed.")
-
     if result.Error == gorm.ErrRecordNotFound {
-        log.Println("Account doesn't exists, creating one.")
-        
         createResult := db.DB.Create(&acc)
         if createResult.Error != nil {
             http.Error(w, "Failed to create account", http.StatusInternalServerError)
@@ -92,7 +82,7 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         http.Error(w, "Failed to create token", http.StatusInternalServerError)
         return
-    }
+    } 
     
     w.WriteHeader(http.StatusOK)
     fmt.Fprint(w, tokenStr)

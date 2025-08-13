@@ -15,8 +15,14 @@ import (
 	"github.com/joho/godotenv"
 )
 var secretkey []byte
-type Claims struct{
-	MetamaskAddress string
+
+type Claims struct {
+    MetamaskAddress string `json:"metamask_address"`
+    jwt.RegisteredClaims
+}
+
+func (C *Claims) MetamaskAddressReturn() string {
+	return C.MetamaskAddress
 }
 
 func init() {
@@ -39,13 +45,6 @@ func CreateToken(metamaskAddress string) (string, error) {
 			"metamask_address": metamaskAddress,
 			"exp":              time.Now().Add(time.Hour * 24).Unix(),
 		})
-	// The better way is to initialize the struct directly:
-	var C = &Claims{MetamaskAddress: metamaskAddress}
-	// Alternatively, you can declare and then assign:
-	// var C Claims
-	// C.MetamaskAddress = metamaskAddress
-	log.Println("Successfully set the Claims ", C)
-
 	tokenString, err := token.SignedString(secretkey)
 	if err != nil {
 		return "", err
@@ -54,7 +53,8 @@ func CreateToken(metamaskAddress string) (string, error) {
 }
 
 func VerifyToken(tokenString string) (string, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString,  claims, func(token *jwt.Token) (interface{}, error) {
 		return secretkey, nil
 	})
 
@@ -66,8 +66,7 @@ func VerifyToken(tokenString string) (string, error) {
 		return "", fmt.Errorf("invalid token")
 	}
 	
-	var C = &Claims{}
-	return C.MetamaskAddress, nil
+    return claims.MetamaskAddress, nil
 }
 
 func GenerateNonce() string {

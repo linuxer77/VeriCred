@@ -66,8 +66,8 @@ func (r *Redis) RedisGetNonce(key string) (string, error) {
 	ctx := context.Background()
     log.Printf("Getting Redis key: %s", key)
 	val, err := r.Client.Get(ctx, key).Result()
-	fmt.Println("Not being able to find the key.")
-    if err != nil {
+
+	if err != nil {
         if err == redis.Nil {
             log.Printf("Redis key not found: %s", key)
             return "", fmt.Errorf("key not found: %s", key)

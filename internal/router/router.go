@@ -18,7 +18,10 @@ func RegisterRouter() http.Handler {
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware)
+		r.Post("/api/create/user", handlers.CreateUser)
+		r.Post("/api/create/org", handlers.CreateUniversity)
+		r.Get("/dashboard", handlers.ShowUser)
+		// r.Get("/university", handlers.ShowUniversity)
 	})
-
 	return r
 }

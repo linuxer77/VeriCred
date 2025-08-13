@@ -9,17 +9,18 @@ import (
 	"vericred/pkg"
 )
 
+type contextKey string
+
+const MetamaskAddressKey contextKey = "metamaskAddress"
+
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
-		fmt.Println("----------Inside the Auth Middleware------------")
 		if authHeader == "" {
 			log.Println("Auth header req.")
 			http.Error(w, "Authorization header required", http.StatusUnauthorized)
 			return
 		}
-	
-		log.Println("AuthHeader: ", authHeader)
 
 		bearerToken := strings.Split(authHeader, " ")
 		if len(bearerToken) != 2 || bearerToken[0] != "Bearer" {
@@ -27,17 +28,16 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Println("BearerToken: ", bearerToken)
-
 		token := bearerToken[1]
 		address, err := pkg.VerifyToken(token)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
+		fmt.Println("Set the address in middleware: ", address)
 
-		ctx := context.WithValue(r.Context(), "metamaskAddress", address)        
-        next.ServeHTTP(w, r.WithContext(ctx))
+		ctx := context.WithValue(r.Context(), MetamaskAddressKey, address)		
+		next.ServeHTTP(w, r.WithContext(ctx))
 
 	})
 }
