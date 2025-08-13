@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
-	_ "os"
+	"os"
 	"time"
 
 	"vericred/internal/models"
@@ -28,8 +28,51 @@ func Init() {
 	}
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	fmt.Println("(SUCCESS): connected to database successfully ")
-	err = DB.AutoMigrate(&models.Users{}, &models.Organization{}, &models.Accounts{})
+	
+	// Initialize models DB connection
+	models.InitDB(DB)
+	
+	// Check if we should use SQL schema or GORM AutoMigrate
+	useSchema := os.Getenv("USE_SQL_SCHEMA")
+	if useSchema == "true" {
+		fmt.Println("Using SQL schema file for database setup")
+		fmt.Println("Please run: psql -d vericred -f sql/schema/004_complete_schema.sql")
+		return
+	}
+	
+	// Default: Use GORM AutoMigrate for development
+	err = DB.AutoMigrate(&models.Accounts{})
 	if err != nil {
-		log.Fatal("AutoMigration failed: ", err)
+		log.Fatal("AutoMigration failed for Accounts: ", err)
+	}
+	
+	err = DB.AutoMigrate(&models.Organization{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for Organization: ", err)
+	}
+	
+	err = DB.AutoMigrate(&models.Users{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for Users: ", err)
+	}
+	
+	err = DB.AutoMigrate(&models.Degree{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for Degree: ", err)
+	}
+	
+	err = DB.AutoMigrate(&models.CredentialTemplate{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for CredentialTemplate: ", err)
+	}
+	
+	err = DB.AutoMigrate(&models.Credential{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for Credential: ", err)
+	}
+	
+	err = DB.AutoMigrate(&models.VerificationRequest{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for VerificationRequest: ", err)
 	}
 }

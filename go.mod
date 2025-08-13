@@ -5,12 +5,14 @@ go 1.24.3
 require (
 	github.com/ethereum/go-ethereum v1.16.1
 	github.com/go-chi/chi/v5 v5.2.2
+	github.com/golang-jwt/jwt/v5 v5.2.3
+	github.com/joho/godotenv v1.5.1
+	github.com/redis/go-redis/v9 v9.11.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.30.0
 )
 
 require (
-	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/bits-and-blooms/bitset v1.20.0 // indirect
@@ -25,8 +27,6 @@ require (
 	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
-	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
@@ -36,8 +36,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/redis/go-redis/v9 v9.11.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/supranational/blst v0.3.14 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
@@ -46,6 +44,4 @@ require (
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
-	gorm.io/datatypes v1.2.6 // indirect
-	gorm.io/driver/mysql v1.5.6 // indirect
 )
