@@ -56,23 +56,23 @@ func Init() {
 		log.Fatal("AutoMigration failed for Users: ", err)
 	}
 	
-	err = DB.AutoMigrate(&models.Degree{})
-	if err != nil {
-		log.Fatal("AutoMigration failed for Degree: ", err)
-	}
+	// err = DB.AutoMigrate(&models.Degree{})
+	// if err != nil {
+	// 	log.Fatal("AutoMigration failed for Degree: ", err)
+	// }
 	
-	err = DB.AutoMigrate(&models.CredentialTemplate{})
-	if err != nil {
-		log.Fatal("AutoMigration failed for CredentialTemplate: ", err)
-	}
+	// err = DB.AutoMigrate(&models.CredentialTemplate{})
+	// if err != nil {
+	// 	log.Fatal("AutoMigration failed for CredentialTemplate: ", err)
+	// }
 	
 	err = DB.AutoMigrate(&models.Credential{})
 	if err != nil {
 		log.Fatal("AutoMigration failed for Credential: ", err)
 	}
 	
-	err = DB.AutoMigrate(&models.VerificationRequest{})
-	if err != nil {
-		log.Fatal("AutoMigration failed for VerificationRequest: ", err)
-	}
+	// err = DB.AutoMigrate(&models.VerificationRequest{})
+	// if err != nil {
+	// 	log.Fatal("AutoMigration failed for VerificationRequest: ", err)
+	// }
 }

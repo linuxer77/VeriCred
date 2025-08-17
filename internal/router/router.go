@@ -21,6 +21,8 @@ func RegisterRouter() http.Handler {
 		r.Post("/api/create/user", handlers.CreateUser)
 		r.Post("/api/create/org", handlers.CreateUniversity)
 		r.Get("/dashboard", handlers.ShowUser)
+		r.Get("/university", handlers.ShowOrg)
+		r.Get("/universities", handlers.AllOrgs)
 		// r.Get("/university", handlers.ShowUniversity)
 	})
 	return r

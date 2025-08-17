@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"vericred/internal/db"
 	"vericred/internal/middleware"
 	"vericred/internal/models"
@@ -64,12 +65,18 @@ func CreateUniversity(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid or missing City", http.StatusBadRequest)
 		return
 	}
-	total_students, ok := body["TotalStudents"]
+	total_students, ok := body["TotalStudents"].(string) // Expecting a string
 	if !ok {
 		http.Error(w, "Invalid or missing TotalStudents", http.StatusBadRequest)
 		return
 	}
-	students := total_students.(int)
+
+	students, err := strconv.Atoi(total_students) // Convert string to int
+	if err != nil {
+		http.Error(w, "TotalStudents must be a valid integer", http.StatusBadRequest)
+		return
+	}
+	
 	address, ok := body["Address"].(string)
 	if !ok {
 		http.Error(w, "Invalid or missing Address", http.StatusBadRequest)
@@ -107,6 +114,7 @@ func CreateUniversity(w http.ResponseWriter, r *http.Request) {
 	res := db.DB.Where("metamask_address = ?", metamaskAddress).First(&org)
 
 	if res.Error == gorm.ErrRecordNotFound {
+		org.IsVerified = true
 		createResult := db.DB.Create(&org)
         if createResult.Error != nil {
             http.Error(w, "Failed to create account", http.StatusInternalServerError)
@@ -135,9 +143,36 @@ func CreateUniversity(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(org)
 }
 
-// func ShowUser(w http.ResponseWriter, r *http.Request) {
-// 	metamaskAddress := r.Context().Value("metamaskAddress").(string)
-// 	var user models.Users
-// 	db.DB.First(&user, metamaskAddress)
-// 	json.NewEncoder(w).Encode(user)
-// }
+func ShowOrg(w http.ResponseWriter, r *http.Request) {
+	metamaskAddress, ok := r.Context().Value(middleware.MetamaskAddressKey).(string)
+	if !ok || metamaskAddress == "" {
+		http.Error(w, "metamaskAddress is missing or invalid", http.StatusBadRequest)
+		return
+	}
+	var org models.Organization
+	res := db.DB.Where("metamask_address = ?", metamaskAddress).First(&org)
+	if res.Error == gorm.ErrRecordNotFound {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "organization not found"})
+		return
+	} else if res.Error != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(org)
+}
+
+func AllOrgs(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Allorgs function called.")
+	var orgs []models.Organization
+	result := db.DB.Limit(10).Find(&orgs) 
+	if result.Error != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})
+		return
+	} 
+	json.NewEncoder(w).Encode(orgs)
+	// for _, org := range orgs {
+	// 	fmt.Printf("Organization: %+v\n", org)
+	// 
+}

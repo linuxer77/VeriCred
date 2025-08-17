@@ -40,6 +40,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	res := db.DB.Where("metamask_address = ?", metamaskAddress).First(&user)
 
 	if res.Error == gorm.ErrRecordNotFound {
+		user.IsVerified = true
 		createResult := db.DB.Create(&user)
         if createResult.Error != nil {
             http.Error(w, "Failed to create account", http.StatusInternalServerError)
@@ -69,8 +70,20 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShowUser(w http.ResponseWriter, r *http.Request) {
-	metamaskAddress := r.Context().Value("metamaskAddress").(string)
+	metamaskAddress, ok := r.Context().Value("metamaskAddress").(string)
+	if !ok || metamaskAddress == "" {
+		http.Error(w, "metamaskAddress is missing or invalid", http.StatusBadRequest)
+	}
+	log.Println("User logged in...")
 	var user models.Users
-	db.DB.First(&user, metamaskAddress)
+	res := db.DB.Where("metamask_address = ?", metamaskAddress).First(&user)
+	if res.Error == gorm.ErrRecordNotFound {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})
+		return
+	}  else if res.Error != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(user)
 }

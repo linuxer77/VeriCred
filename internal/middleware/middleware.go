@@ -3,9 +3,9 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
+	"vericred/internal/logging"
 	"vericred/pkg"
 )
 
@@ -17,7 +17,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			log.Println("Auth header req.")
+			logging.Logger.Println("Auth header req.")
 			http.Error(w, "Authorization header required", http.StatusUnauthorized)
 			return
 		}
