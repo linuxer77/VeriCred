@@ -35,7 +35,7 @@ except Exception as e:
     print(text)
     print("-" * len(text))
 
-contract_address = "0xA965001603B9d9FB111706d4dfe458d7eA9f08C4"
+contract_address = "0x6DA6E82143802EBAC3100E05aB4cd1b8A96554D2"
 
 try:
     contract = w3.eth.contract(address=contract_address,abi=abi)
@@ -45,32 +45,34 @@ except Exception as e:
     print("---------------------------------")
 
 
-nonce = w3.eth.get_transaction_count(account.address)
-print(f"Nonce for {account.address}: {nonce}")
+print("Token ID: ", contract.functions.tokenURI(0).call())
 
-tx = contract.functions.newOrg("0x8d0BB74e37ab644964AcA2f3Fbe12b9147f9d841").build_transaction({
-    "from": account.address,
-    "nonce": nonce,
-    "gas": 3000000,
-    "gasPrice": w3.eth.gas_price,
-})
+# nonce = w3.eth.get_transaction_count(account.address)
+# print(f"Nonce for {account.address}: {nonce}")
 
-try:
-    signed_txn = w3.eth.account.sign_transaction(tx, private_key=pvt_key)
-except Exception as e:
-    print("Error while signing txn: ", e)
+# tx = contract.functions.mintDoc("0x8d0BB74e37ab644964AcA2f3Fbe12b9147f9d841", "https://chocolate-electoral-parrot-267.mypinata.cloud/ipfs/bafkreige7clmdi67kbrtyouk3ilcxrkjzcjb65s5ccplllek4helrmmw3u").build_transaction({
+#     "from": account.address,
+#     "nonce": nonce,
+#     "gas": 3000000,
+#     "gasPrice": w3.eth.gas_price,
+# })
 
-try:
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
-    print("Transaction sent: ", tx_hash.hex())
-except Exception as e:
-    print("Error when sending raw txn: ", e)
+# try:
+#     signed_txn = w3.eth.account.sign_transaction(tx, private_key=pvt_key)
+# except Exception as e:
+#     print("Error while signing txn: ", e)
 
-try:
-    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-    print("Receipt:", receipt.transactionHash)
-except Exception as e:
-    print("Error while receiving receipt: ", e)
+# try:
+#     tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
+#     print("Transaction sent: ", tx_hash.hex())
+# except Exception as e:
+#     print("Error when sending raw txn: ", e)
+
+# try:
+#     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+#     print("Receipt:", receipt.transactionHash)
+# except Exception as e:
+#     print("Error while receiving receipt: ", e)
 
 
 

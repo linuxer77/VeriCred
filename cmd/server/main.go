@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	_ "math/big"
 	"net/http"
 	"vericred/internal/db"
 	"vericred/internal/logging"
