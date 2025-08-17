@@ -3,21 +3,22 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"vericred/internal/eth"
-
-	"github.com/go-chi/chi/v5"
+	"vericred/internal/db"
+	"vericred/internal/logging"
+	"vericred/internal/router"
 )
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("This shit is working now"))
-}
-
 func main() {
-	eth.Contractresp("BODY")
-	
-	r := chi.NewRouter()
-	r.Get("/", handleIndex)
+	db.Init()	
+	logging.Init()
 
+	r := router.RegisterRouter()
+	// handlers.AllOrgs()
+	//redis
+	// rdb := redisdb.GetRedisInstance()
+	// nonce := rdb.RedisGetNonce("0x5C67fAb678297594E35080831847084F8804E7Ae")
+	
+	// log.Println("Nonce: ", nonce)
 	fmt.Println("Port :8080 is active....")
 	http.ListenAndServe(":8080", r)
 }
