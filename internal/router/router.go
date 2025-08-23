@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"vericred/internal/eth/ipfs"
 	"vericred/internal/handlers"
 	"vericred/internal/middleware"
 
@@ -11,10 +12,19 @@ import (
 
 func RegisterRouter() http.Handler {
 	r := chi.NewRouter()
-    r.Use(middleware.CORSMiddleware)
+		
+	r.Use(middleware.CORSMiddleware)
 	r.Use(middleware.LoggingMiddleware)
 	r.Post("/getnonce", handlers.GetNonce)
 	r.Post("/auth/metamasklogin", handlers.LoginInMetamask)
+	r.Get("/universities", handlers.AllOrgs)
+	r.Get("/students", handlers.AllUsers)
+	r.Post("/credmint", handlers.MintCredentials)
+	r.Post("/showuser", handlers.SearchUser)
+	r.Get("/transactions", handlers.ShowAllTransactions)
+	
+	// pending request (public create by student via body wallets)
+	r.Post("/api/pending/request", handlers.CreatePendingRequest)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware)
@@ -22,7 +32,13 @@ func RegisterRouter() http.Handler {
 		r.Post("/api/create/org", handlers.CreateUniversity)
 		r.Get("/dashboard", handlers.ShowUser)
 		r.Get("/university", handlers.ShowOrg)
-		r.Get("/universities", handlers.AllOrgs)
+		r.Post("/api/uploadtoipfs", ipfs.CreateJSONFileAndStoreToIPFS)
+		r.Get("/api/creds", handlers.UserCreds)
+		r.Post("/transactionhash", handlers.SetTransactionInfo)
+
+		// pending requests for org
+		r.Get("/api/pending/for-org", handlers.ListPendingRequestsForOrg)
+		r.Patch("/api/pending/approve", handlers.ApprovePendingRequest)
 		// r.Get("/university", handlers.ShowUniversity)
 	})
 	return r

@@ -18,6 +18,6 @@ func UploadToIPFS(filename string) (string, error) {
 		return "" , err
 	}
 
-	message := fmt.Sprintf("File pinned successfully. Link: https://ipfs.io/ipfs/%s\n", response.IpfsHash)
+	message := fmt.Sprintf("https://ipfs.io/ipfs/%s\n", response.IpfsHash)
 	return message, nil
 }

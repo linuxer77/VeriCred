@@ -79,7 +79,6 @@ func GenerateNonce() string {
 }
 
 func VerifySignature(address, message, sigHex string) (bool, error) {
-	log.Println("VerifySignature gets called.")
 	data := []byte("\x19Ethereum Signed Message:\n" + strconv.Itoa(len(message)) + message)
     hash :=  crypto.Keccak256(data)
 
@@ -95,8 +94,6 @@ func VerifySignature(address, message, sigHex string) (bool, error) {
 		return false, err
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*pubKey).Hex()
-	log.Println("recoveredAdrr: ", recoveredAddr)
-	log.Println("Sent address: ", address)
 	return strings.EqualFold(recoveredAddr, address), nil
 }
 

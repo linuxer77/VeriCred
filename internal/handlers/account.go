@@ -31,7 +31,7 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    fmt.Printf("Metamask Address: %s\nSignature: %s", metamaskAddress, signature)
+    // fmt.Printf("Metamask Address: %s\nSignature: %s", metamaskAddress, signature)
 
     rdb := redisdb.GetRedisInstance()
     nonce, err := rdb.RedisGetNonce(metamaskAddress)
@@ -59,8 +59,6 @@ func LoginInMetamask(w http.ResponseWriter, r *http.Request) {
         MetamaskAddress: metamaskAddress,
         AccountType:     "user",
     }
-
-    log.Println("Account model created successfully.")    
 
     var existingAcc models.Accounts
     result := db.DB.First(&existingAcc, "metamask_address = ?", metamaskAddress)    

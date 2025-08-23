@@ -152,13 +152,16 @@ func ShowOrg(w http.ResponseWriter, r *http.Request) {
 	var org models.Organization
 	res := db.DB.Where("metamask_address = ?", metamaskAddress).First(&org)
 	if res.Error == gorm.ErrRecordNotFound {
+		fmt.Println("inside not found university")
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(map[string]string{"error": "organization not found"})
 		return
 	} else if res.Error != nil {
+		fmt.Println("Database error")
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
+	fmt.Println(org)
 	json.NewEncoder(w).Encode(org)
 }
 

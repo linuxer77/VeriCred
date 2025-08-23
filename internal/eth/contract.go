@@ -35,7 +35,7 @@ var C = &Contract{
 	cAddress: "0xDE5C084a7959533893954BA072895B53fE1E7486",
 }
 
-func (c Contract) Deploy() string{
+func (c Contract) Deploy() string {
 
 	privateKeyHex := C.privateKeyHex
 	privateKey, err := crypto.HexToECDSA(strings.TrimPrefix(privateKeyHex, "0x"))
@@ -149,6 +149,10 @@ func (cf ContractFunctions) AllOrgs() []common.Address {
 	allOrgs, err := icv.instance.AllOrgs(nil)
 	if err != nil {
 		log.Fatal("Some error occurred when calling the AllOrgs function: ", err)
+	}
+
+	for _, org := range allOrgs {
+		fmt.Println("Org Address:", org.Hex())
 	}
 	return allOrgs
 }

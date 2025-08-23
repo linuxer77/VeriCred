@@ -35,9 +35,7 @@ func GetRedisInstance() *Redis {
 	_, err := instance.Client.Ping(ctx).Result()
 	if err != nil {
 		log.Printf("Redis connection failed: %v", err)
-	} else {
-		log.Println("Redis connected successfully")
-	}
+	} 
 	return instance
 }
 
@@ -64,7 +62,6 @@ func (r *Redis) RedisSetNonce(key, value string) error {
 
 func (r *Redis) RedisGetNonce(key string) (string, error) {
 	ctx := context.Background()
-    log.Printf("Getting Redis key: %s", key)
 	val, err := r.Client.Get(ctx, key).Result()
 
 	if err != nil {
@@ -76,6 +73,5 @@ func (r *Redis) RedisGetNonce(key string) (string, error) {
         return "", fmt.Errorf("failed to get redis key: %w", err)
     }
     
-    log.Printf("Successfully retrieved Redis key: %s = %s", key, val)
     return val, nil
 }

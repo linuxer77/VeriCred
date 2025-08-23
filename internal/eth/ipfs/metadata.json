@@ -1,8 +1,6 @@
 {
   "name": "BTECH",
   "description": "Official academic credential awarded by Example University for the successful completion of the Bachelor of Science in Computer Science program.",
-  "image": "ipfs://QmYourUniversityLogoHash/university_logo.png",
-  "external_url": "ipfs://QmYourCredentialDetailsHash/bs_cs_program_details.pdf",
   "attributes": [
     {
       "trait_type": "Credential Type",
@@ -45,14 +43,6 @@
       "value": "EXU-CS-BS-12345-2024"
     },
     {
-      "trait_type": "Status",
-      "value": "Active"
-    },
-    {
-      "trait_type": "Verification URL",
-      "value": "https://vericred.com/verify?credentialId=EXU-CS-BS-12345-2024"
-    },
-    {
       "trait_type": "Accreditation Body",
       "value": "Accreditation Council for Education (ACE)"
     },
@@ -61,9 +51,6 @@
       "value": "ipfs://QmProgramDetailsHash/bs_cs_curriculum.json"
     }
   ],
-  "animation_url": null,
-  "youtube_url": null,
-  "background_color": "FFFFFF",
   "custom_fields": {
     "deanSignatureHash": "QmDeanSignatureHashForThisCredential",
     "facultyAdvisor": "Dr. Alan Turing"

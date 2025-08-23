@@ -4,6 +4,9 @@ import (
 	"fmt"
 	_ "math/big"
 	"net/http"
+
+	// "vericred/internal/db"
+	// "vericred/internal/logging"
 	"vericred/internal/db"
 	"vericred/internal/logging"
 	"vericred/internal/router"
@@ -12,7 +15,11 @@ import (
 func main() {
 	db.Init()	
 	logging.Init()
-
+	// var c eth.ContractFunctions
+	// c.NewOrg("0x1A5b0307F532cd664f93D71786aa84b67964e635")
+	// c.IsVerfiedOrg("0x1A5b0307F532cd664f93D71786aa84b67964e635")
+	// t := c.CurrentTokenID()
+	// c.TokenURI(t)
 	r := router.RegisterRouter()
 	// handlers.AllOrgs()
 	//redis

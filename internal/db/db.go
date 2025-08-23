@@ -56,17 +56,19 @@ func Init() {
 		log.Fatal("AutoMigration failed for Users: ", err)
 	}
 	
-	// err = DB.AutoMigrate(&models.Degree{})
-	// if err != nil {
-	// 	log.Fatal("AutoMigration failed for Degree: ", err)
-	// }
+	// Pending requests table (required by pendingrequest handlers)
+	err = DB.AutoMigrate(&models.PendingRequest{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for PendingRequest: ", err)
+	}
 	
-	// err = DB.AutoMigrate(&models.CredentialTemplate{})
-	// if err != nil {
-	// 	log.Fatal("AutoMigration failed for CredentialTemplate: ", err)
-	// }
-	
+	// Credentials (uses FKs to users/orgs)
 	err = DB.AutoMigrate(&models.Credential{})
+	if err != nil {
+		log.Fatal("AutoMigration failed for Credential: ", err)
+	}
+
+	err = DB.AutoMigrate(&models.Transaction{})
 	if err != nil {
 		log.Fatal("AutoMigration failed for Credential: ", err)
 	}

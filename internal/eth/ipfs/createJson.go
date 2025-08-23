@@ -1,6 +1,7 @@
 package ipfs
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -37,7 +38,6 @@ import (
 
 
 func CreateJSONFileAndStoreToIPFS(w http.ResponseWriter, r *http.Request) {
-	
 	f, err := os.CreateTemp("/home/linuxer77/temp-files", "tempfile-*.json")
 	if err != nil {
 		fmt.Println("Error when calling CreateTemp:", err)
@@ -49,7 +49,6 @@ func CreateJSONFileAndStoreToIPFS(w http.ResponseWriter, r *http.Request) {
 
 	bodyBytes, err := io.ReadAll(r.Body)
 
-	fmt.Printf("Received request body: %s\n", bodyBytes)
 	
 	if err != nil {
 		fmt.Println("Error in calling ReadAll():", err)
@@ -68,4 +67,5 @@ func CreateJSONFileAndStoreToIPFS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(msg)
+	json.NewEncoder(w).Encode(map[string]string{"ipfslink": msg})
 }
