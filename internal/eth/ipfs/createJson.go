@@ -2,10 +2,10 @@ package ipfs
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 )
 
 func CreateJSONFileAndStoreToIPFS(w http.ResponseWriter, r *http.Request) {
@@ -32,12 +32,12 @@ func CreateJSONFileAndStoreToIPFS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := UploadToIPFS(tmpFile.Name())
+	msg, err := UploadToIPFS(tmpFile.Name())
 	if err != nil {
 		http.Error(w, "failed to upload to IPFS", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]string{"ipfslink": strings.TrimSpace(link)})
+	fmt.Println(msg)
+	json.NewEncoder(w).Encode(map[string]string{"ipfslink": msg})
 }
