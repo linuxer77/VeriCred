@@ -108,27 +108,34 @@ func AllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchUser(w http.ResponseWriter, r *http.Request) {
-	// metamaskAddress, ok := r.Context().Value("metamaskAddress").(string)
-	// if !ok || metamaskAddress == "" {
-	// 	http.Error(w, "metamaskAddress is missing or invalid", http.StatusBadRequest)
-	// }
 	var body map[string]any
+	err := json.NewDecoder(r.Body).Decode(&body)
+	
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
 
-	json.NewDecoder(r.Body).Decode(&body)
+	address, ok := body["metamask_address"].(string)
 
-	metamaskAddress := body["metamask_address"].(string)
+	if !ok || address == "" {
+		http.Error(w, "Invalid or missing metamask_address", http.StatusBadRequest)
+		return
+	}
 
-	log.Println("User logged in...")
 	var user models.Users
-	res := db.DB.Where("metamask_address = ?", metamaskAddress).First(&user)
+
+	res := db.DB.Raw("SELECT * FROM users WHERE metamask_address = ?", address).Scan(&user)
+	
 	if res.Error == gorm.ErrRecordNotFound {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "organization not found"})
 		return
 	} else if res.Error != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	json.NewEncoder(w).Encode(user)
 
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
 }

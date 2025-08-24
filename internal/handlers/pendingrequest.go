@@ -98,6 +98,7 @@ func CreatePendingRequest(w http.ResponseWriter, r *http.Request) {
 func ListPendingRequestsForOrg(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	fmt.Println("Inside all pending req")
 	orgAddr, ok := r.Context().Value(middleware.MetamaskAddressKey).(string)
 	if !ok || orgAddr == "" {
 		fmt.Println("Unauthorized access: missing or invalid org address in context")
@@ -113,7 +114,24 @@ func ListPendingRequestsForOrg(w http.ResponseWriter, r *http.Request) {
 
 	var reqs []models.PendingRequest
 	if err := db.DB.Where("organization_id = ? AND is_approved = ?", org.ID, false).
-		Preload("Requester").
+		Preload("Requester", func(db *gorm.DB) *gorm.DB {
+			if db == nil {
+				fmt.Println("Failed to preload Requester: DB instance is nil")
+				log.Println("failed to preload Requester: DB instance is nil")
+				http.Error(w, "database error", http.StatusInternalServerError)
+				return nil
+			}
+			return db
+		}).
+		Preload("Organization", func(db *gorm.DB) *gorm.DB {
+			if db == nil {
+				fmt.Println("Failed to preload Organization: DB instance is nil")
+				log.Println("failed to preload Organization: DB instance is nil")
+				http.Error(w, "database error", http.StatusInternalServerError)
+				return nil
+			}
+			return db
+		}).
 		Order("created_at DESC").
 		Find(&reqs).Error; err != nil {
 		fmt.Println("Failed to list pending requests")

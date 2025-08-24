@@ -23,8 +23,6 @@ func CreateUniversity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(body)
-
 	acad_email, ok := body["AcadEmail"].(string)
 	if !ok {
 		http.Error(w, "Invalid or missing AcadEmail", http.StatusBadRequest)
@@ -161,7 +159,6 @@ func ShowOrg(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(org)
 	json.NewEncoder(w).Encode(org)
 }
 
@@ -178,4 +175,37 @@ func AllOrgs(w http.ResponseWriter, r *http.Request) {
 	// for _, org := range orgs {
 	// 	fmt.Printf("Organization: %+v\n", org)
 	// 
+}
+
+func SpecificUniversity(w http.ResponseWriter, r *http.Request) {
+	var body map[string]any
+	err := json.NewDecoder(r.Body).Decode(&body)
+	
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	address, ok := body["metamask_address"].(string)
+
+	if !ok || address == "" {
+		http.Error(w, "Invalid or missing metamask_address", http.StatusBadRequest)
+		return
+	}
+
+	var org models.Organization
+	
+	res := db.DB.Raw("SELECT * FROM organizations WHERE metamask_address = ?", address).Scan(&org)
+	
+	if res.Error == gorm.ErrRecordNotFound {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "organization not found"})
+		return
+	} else if res.Error != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	fmt.Print(org)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(org)
 }

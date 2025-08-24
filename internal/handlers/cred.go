@@ -193,3 +193,35 @@ func UserCreds(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(cred)
 }
+
+
+
+func ShowSearchedUserCreds(w http.ResponseWriter, r *http.Request) {
+	var body map[string]any
+	err := json.NewDecoder(r.Body).Decode(&body)
+	
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	address, ok := body["metamask_address"].(string)
+	if !ok || address == "" {
+		http.Error(w, "Invalid or missing metamask_address", http.StatusBadRequest)
+		return
+	}
+
+	var cred []models.Credential
+	res := db.DB.Where("student_wallet = ?", address).Find(&cred)
+	if res.Error == gorm.ErrRecordNotFound {
+		fmt.Println("User not found")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})
+		return
+	} else if res.Error != nil {
+		fmt.Println("Database error:", res.Error)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(cred)
+}

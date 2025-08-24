@@ -21,10 +21,12 @@ func RegisterRouter() http.Handler {
 	r.Get("/students", handlers.AllUsers)
 	r.Post("/credmint", handlers.MintCredentials)
 	r.Post("/showuser", handlers.SearchUser)
+	r.Post("/usercreds", handlers.ShowSearchedUserCreds)
 	r.Get("/transactions", handlers.ShowAllTransactions)
 	
 	// pending request (public create by student via body wallets)
 	r.Post("/api/pending/request", handlers.CreatePendingRequest)
+	r.Post("/api/specific-university", handlers.SpecificUniversity)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware)
@@ -35,7 +37,6 @@ func RegisterRouter() http.Handler {
 		r.Post("/api/uploadtoipfs", ipfs.CreateJSONFileAndStoreToIPFS)
 		r.Get("/api/creds", handlers.UserCreds)
 		r.Post("/transactionhash", handlers.SetTransactionInfo)
-
 		// pending requests for org
 		r.Get("/api/pending/for-org", handlers.ListPendingRequestsForOrg)
 		r.Patch("/api/pending/approve", handlers.ApprovePendingRequest)
