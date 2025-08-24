@@ -30,3 +30,10 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
         "nonce": nonce,
     })
 }
+
+// GetNonceHealth is a simple GET endpoint for health checks; returns 200 OK without touching Redis or DB.
+func GetNonceHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}

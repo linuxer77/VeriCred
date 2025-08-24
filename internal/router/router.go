@@ -16,6 +16,9 @@ func RegisterRouter() http.Handler {
 		
 	r.Use(middleware.CORSMiddleware)
 	r.Use(middleware.LoggingMiddleware)
+	// Health-style GET for proxies expecting a GET at /getnonce
+	r.Get("/getnonce", handlers.GetNonceHealth)
+	// Actual nonce creation (POST)
 	r.Post("/getnonce", handlers.GetNonce)
 	r.Post("/auth/metamasklogin", handlers.LoginInMetamask)
 	r.Get("/universities", handlers.AllOrgs)
