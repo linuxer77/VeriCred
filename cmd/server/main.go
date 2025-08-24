@@ -13,8 +13,7 @@ import (
 func main() {
 	logging.Init()
 
-	// Start DB initialization in the background so the server can bind to the port immediately
-	go db.Init()
+	db.Init()
 
 	r := router.RegisterRouter()
 	fmt.Println("Port :8080 is active....")
