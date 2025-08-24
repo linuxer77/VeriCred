@@ -48,4 +48,7 @@ func Init() {
 	if err = DB.AutoMigrate(&models.Credential{}); err != nil {
 		log.Fatal("AutoMigration failed for Credential: ", err)
 	}
+	if err = DB.AutoMigrate(&models.Transaction{}); err != nil {
+		log.Fatal("AutoMigration failed for Transaction: ", err)
+	}
 }
