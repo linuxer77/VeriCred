@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"vericred/internal/models"
@@ -14,8 +15,30 @@ import (
 
 var DB *gorm.DB
 
+func ensureSSLMode(dsn string) string {
+	if strings.Contains(dsn, "postgres://") || strings.Contains(dsn, "postgresql://") {
+		// ensure sslmode=require for hosted providers like Render
+		if !strings.Contains(dsn, "sslmode=") {
+			sep := "?"
+			if strings.Contains(dsn, "?") {
+				sep = "&"
+			}
+			dsn = dsn + sep + "sslmode=require"
+		}
+	}
+	return dsn
+}
+
 func Init() {
-	dsn := "host=localhost user=postgres password=post4321 dbname=vericred port=5432 sslmode=disable TimeZone=Asia/Kolkata"
+	// Prefer DB_URL if provided (e.g., Render external URL)
+	dsn := os.Getenv("DB_URL")
+	if dsn == "" {
+		// Fallback to local development DSN
+		dsn = "host=localhost user=postgres password=post4321 dbname=vericred port=5432 sslmode=disable TimeZone=Asia/Kolkata"
+	} else {
+		dsn = ensureSSLMode(dsn)
+	}
+
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -41,40 +64,19 @@ func Init() {
 	}
 	
 	// Default: Use GORM AutoMigrate for development
-	err = DB.AutoMigrate(&models.Accounts{})
-	if err != nil {
+	if err = DB.AutoMigrate(&models.Accounts{}); err != nil {
 		log.Fatal("AutoMigration failed for Accounts: ", err)
 	}
-	
-	err = DB.AutoMigrate(&models.Organization{})
-	if err != nil {
+	if err = DB.AutoMigrate(&models.Organization{}); err != nil {
 		log.Fatal("AutoMigration failed for Organization: ", err)
 	}
-	
-	err = DB.AutoMigrate(&models.Users{})
-	if err != nil {
+	if err = DB.AutoMigrate(&models.Users{}); err != nil {
 		log.Fatal("AutoMigration failed for Users: ", err)
 	}
-	
-	// Pending requests table (required by pendingrequest handlers)
-	err = DB.AutoMigrate(&models.PendingRequest{})
-	if err != nil {
+	if err = DB.AutoMigrate(&models.PendingRequest{}); err != nil {
 		log.Fatal("AutoMigration failed for PendingRequest: ", err)
 	}
-	
-	// Credentials (uses FKs to users/orgs)
-	err = DB.AutoMigrate(&models.Credential{})
-	if err != nil {
+	if err = DB.AutoMigrate(&models.Credential{}); err != nil {
 		log.Fatal("AutoMigration failed for Credential: ", err)
 	}
-
-	err = DB.AutoMigrate(&models.Transaction{})
-	if err != nil {
-		log.Fatal("AutoMigration failed for Credential: ", err)
-	}
-	
-	// err = DB.AutoMigrate(&models.VerificationRequest{})
-	// if err != nil {
-	// 	log.Fatal("AutoMigration failed for VerificationRequest: ", err)
-	// }
 }
