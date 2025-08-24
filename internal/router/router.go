@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 
 	"vericred/internal/eth/ipfs"
@@ -23,7 +24,9 @@ func RegisterRouter() http.Handler {
 	r.Post("/showuser", handlers.SearchUser)
 	r.Post("/usercreds", handlers.ShowSearchedUserCreds)
 	r.Get("/transactions", handlers.ShowAllTransactions)
-	
+	r.Get("/kaithheathcheck", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "ok")
+	})
 	// pending request (public create by student via body wallets)
 	r.Post("/api/pending/request", handlers.CreatePendingRequest)
 	r.Post("/api/specific-university", handlers.SpecificUniversity)
