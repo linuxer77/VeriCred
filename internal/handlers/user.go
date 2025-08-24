@@ -75,7 +75,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShowUser(w http.ResponseWriter, r *http.Request) {
-	metamaskAddress, ok := r.Context().Value("metamaskAddress").(string)
+	metamaskAddress, ok := r.Context().Value(middleware.MetamaskAddressKey).(string)
 	if !ok || metamaskAddress == "" {
 		http.Error(w, "metamaskAddress is missing or invalid", http.StatusBadRequest)
 	}
