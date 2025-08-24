@@ -32,6 +32,9 @@ func Init() {
 
 	models.InitDB(DB)
 
+	// Drop any stale/incorrect FK created previously by older model tags
+	DB.Exec("ALTER TABLE credentials DROP CONSTRAINT IF EXISTS fk_organizations_credentials;")
+
 	// AutoMigrate required tables
 	if err = DB.AutoMigrate(&models.Accounts{}); err != nil {
 		log.Fatal("AutoMigration failed for Accounts: ", err)
@@ -51,4 +54,8 @@ func Init() {
 	if err = DB.AutoMigrate(&models.Transaction{}); err != nil {
 		log.Fatal("AutoMigration failed for Transaction: ", err)
 	}
+
+	// Ensure correct FKs exist for Credential relations
+	_ = DB.Migrator().CreateConstraint(&models.Credential{}, "User")
+	_ = DB.Migrator().CreateConstraint(&models.Credential{}, "Organization")
 }
