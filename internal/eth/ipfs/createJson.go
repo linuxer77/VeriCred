@@ -38,7 +38,13 @@ import (
 
 
 func CreateJSONFileAndStoreToIPFS(w http.ResponseWriter, r *http.Request) {
-	f, err := os.CreateTemp("/home/linuxer77/temp-files", "tempfile-*.json")
+	currentPath, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error when getting current directory:", err)
+		return
+	}
+
+	f, err := os.CreateTemp(currentPath, "tempfile-*.json")
 	if err != nil {
 		fmt.Println("Error when calling CreateTemp:", err)
 		return
