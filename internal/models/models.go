@@ -63,7 +63,7 @@ type Organization struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
     Account Accounts `gorm:"polymorphic:Owner;"`
-    Credentials  []Credential `gorm:"foreignKey:UserID"`
+    Credentials  []Credential `gorm:"foreignKey:OrganizationID"`
 
 	PendingRequests []PendingRequest `gorm:"foreignKey:OrganizationID"`
 }
@@ -98,10 +98,10 @@ type Credential struct {
 	IPFSLink 		string 	  `gorm:"not null" json:"ipfs_link"`
 	DeanSig 		string 	  `gorm:"not null" json:"dean_sig"`
 
-	UserID        uint        `json:"user_id"`
-	User          Users       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
+	UserID         uint         `json:"user_id"`
+	User           Users        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
 
-	OrganizationID uint        `json:"organization_id"`
+	OrganizationID uint         `json:"organization_id"`
 	Organization   Organization `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"organization"`
 }
 

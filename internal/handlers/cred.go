@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 	"vericred/internal/db"
 	"vericred/internal/middleware"
@@ -107,7 +108,7 @@ func MintCredentials(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid or missing 'ipfs_link'", http.StatusBadRequest)
 		return
 	}
-	cred.IPFSLink = ipfsLink
+	cred.IPFSLink = strings.TrimSpace(ipfsLink)
 
 	deanSig, ok := body["dean_sig"].(string)
 	if !ok || deanSig == "" {
