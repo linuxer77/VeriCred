@@ -23,9 +23,9 @@ func GetRedisInstance() *Redis {
 	once.Do(func() {
 		instance = &Redis{
 			Client: redis.NewClient(&redis.Options{
-				Addr:     "redis-18234.c61.us-east-1-3.ec2.redns.redis-cloud.com:18234",
+				Addr:     "redis-cqtv-chah-625658.leapcell.cloud:6379",
 				Username: "default",
-				Password: "2I1L2vRC7nTfGu04Gr6x7wLc2Sh3sZpR",
+				Password: "Ae00000i0bCV9NoGMY4YyTLaWbKckBrUHeVsQUCEqtFJrLd/kDZKMxmzm13oNzh+Ixopp+a",
 				DB:       0,
 			}),
 		}
@@ -73,4 +73,3 @@ func (r *Redis) RedisGetNonce(key string) (string, error) {
 
 	return val, nil
 }
-
