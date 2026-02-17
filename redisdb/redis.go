@@ -2,6 +2,7 @@ package redisdb
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"sync"
@@ -27,6 +28,9 @@ func GetRedisInstance() *Redis {
 				Username: "default",
 				Password: "Ae00000i0bCV9NoGMY4YyTLaWbKckBrUHeVsQUCEqtFJrLd/kDZKMxmzm13oNzh+Ixopp+a",
 				DB:       0,
+				TLSConfig: &tls.Config{
+					MinVersion: tls.VersionTLS12,
+				},
 			}),
 		}
 	})
